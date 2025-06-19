@@ -1,6 +1,6 @@
-package com.tigran.applications.newsapplication.data.remote.model
+package com.tigran.applications.newsapplication.domain.model
 
-data class NewsSource(
+data class NewsSourceModel(
     val id: String,
     val name: String,
     val description: String,
