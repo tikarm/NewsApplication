@@ -4,8 +4,9 @@ import com.tigran.applications.newsapplication.data.remote.datasource.RemoteData
 import com.tigran.applications.newsapplication.data.remote.model.NewsSource
 import com.tigran.applications.newsapplication.domain.model.NewsSourceModel
 import com.tigran.applications.newsapplication.domain.repository.NewsSourceRepository
+import javax.inject.Inject
 
-class NewsSourceRepositoryImpl(
+class NewsSourceRepositoryImpl @Inject constructor(
     private val remoteDataSource: RemoteDataSource
 ) : NewsSourceRepository {
     override suspend fun getNewsSources(): List<NewsSourceModel> {

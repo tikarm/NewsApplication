@@ -4,12 +4,13 @@ import com.tigran.applications.newsapplication.data.remote.api.NewsApiService
 import com.tigran.applications.newsapplication.data.remote.exception.ApiException
 import com.tigran.applications.newsapplication.data.remote.model.Article
 import com.tigran.applications.newsapplication.data.remote.model.NewsSource
+import javax.inject.Inject
 
-private const val API_KEY = "649f61a3-e5bd-4044-8021-d3edb05b0b56"
+private const val API_KEY = "3e2201fafbb540b8b35bd4b5431d0f21"
 private const val STATUS_CODE_OK = "ok"
 private const val STATUS_CODE_ERROR = "error"
 
-open class RemoteDataSource(
+class RemoteDataSource @Inject constructor(
     private val apiService: NewsApiService
 ) {
     @Throws(ApiException::class)
