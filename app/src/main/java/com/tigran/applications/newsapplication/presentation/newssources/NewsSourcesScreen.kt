@@ -1,5 +1,6 @@
 package com.tigran.applications.newsapplication.presentation.newssources
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -20,11 +22,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.tigran.applications.newsapplication.presentation.uistate.NewsSourceUiState
+import com.tigran.applications.newsapplication.presentation.newssources.uistate.NewsSourceUiState
 
 @Composable
 fun NewsSourcesScreen(viewModel: NewsSourcesViewModel = hiltViewModel()) {
     val uiState by viewModel.newsSourceListUiState.collectAsState()
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.onScreenClosed()
+        }
+    }
 
     if (uiState.isLoading) {
         Box(

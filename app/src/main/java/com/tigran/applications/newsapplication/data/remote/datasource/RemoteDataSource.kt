@@ -15,7 +15,11 @@ class RemoteDataSource @Inject constructor(
 ) {
     @Throws(ApiException::class)
     suspend fun getSources(): List<NewsSource> {
-        val response = apiService.getSources(API_KEY)
+        val response = try {
+            apiService.getSources(API_KEY)
+        } catch (e: Exception) {
+            throw ApiException("Failed to fetch sources")
+        }
         if (response.status == STATUS_CODE_OK) {
             return response.sources
         }

@@ -4,9 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tigran.applications.newsapplication.domain.model.NewsSourceModel
 import com.tigran.applications.newsapplication.domain.repository.NewsSourceRepository
-import com.tigran.applications.newsapplication.presentation.uistate.NewsSourceListUiState
-import com.tigran.applications.newsapplication.presentation.uistate.NewsSourceUiState
+import com.tigran.applications.newsapplication.presentation.newssources.uistate.NewsSourceListUiState
+import com.tigran.applications.newsapplication.presentation.newssources.uistate.NewsSourceUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,12 +19,13 @@ class NewsSourcesViewModel @Inject constructor(
     private val newsSourceRepository: NewsSourceRepository
 ) : ViewModel() {
 
+    private var periodicFetchJob: Job? = null
     private val _newsSourceListUiState: MutableStateFlow<NewsSourceListUiState> by lazy {
         MutableStateFlow(NewsSourceListUiState(isLoading = true)).also {
             viewModelScope.launch {
                 fetchNewsSources()
             }.invokeOnCompletion {
-                fetchEvery(4000)
+                fetchEvery(60_000)
             }
         }
     }
@@ -43,12 +45,16 @@ class NewsSourcesViewModel @Inject constructor(
     }
 
     private fun fetchEvery(millis: Long) {
-        viewModelScope.launch {
+        periodicFetchJob = viewModelScope.launch {
             while (true) {
                 delay(millis)
                 fetchNewsSources()
             }
         }
+    }
+
+    fun onScreenClosed() {
+        periodicFetchJob?.cancel()
     }
 
     private fun NewsSourceModel.toNewsSourceUiState() =
