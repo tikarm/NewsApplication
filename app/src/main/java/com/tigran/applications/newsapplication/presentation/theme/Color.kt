@@ -1,4 +1,4 @@
-package com.tigran.applications.newsapplication.ui.theme
+package com.tigran.applications.newsapplication.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
