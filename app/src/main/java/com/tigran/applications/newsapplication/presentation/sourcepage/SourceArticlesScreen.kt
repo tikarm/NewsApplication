@@ -9,8 +9,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +25,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,10 +41,13 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.toUri
 import com.tigran.applications.newsapplication.presentation.sourcepage.uistate.ArticleUiState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun SourceArticlesScreen(
-    viewModel: SourceArticlesViewModel = hiltViewModel()
+    viewModel: SourceArticlesViewModel = hiltViewModel(),
+    onBackPressed: () -> Unit
 ) {
     val uiState by viewModel.sourcePageUiState.collectAsState()
     var isNewPageLoading by remember { mutableStateOf(false) }
@@ -64,6 +74,14 @@ fun SourceArticlesScreen(
     LazyColumn(
         state = listState,
     ) {
+        item {
+            SearchBar(
+                onQueryUpdated = { newQuery ->
+                    viewModel.onSearchTextUpdated(newQuery)
+                },
+                onBackPressed = onBackPressed
+            )
+        }
         items(
             count = uiState.articles.size,
             key = { uiState.articles[it].id }
@@ -83,6 +101,46 @@ fun SourceArticlesScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SearchBar(
+    onQueryUpdated: (String) -> Unit,
+    onBackPressed: () -> Unit
+) {
+    var currentQuery by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onBackPressed) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back"
+            )
+        }
+
+        OutlinedTextField(
+            value = currentQuery,
+            onValueChange = { newQuery ->
+                currentQuery = newQuery
+
+                coroutineScope.launch {
+                    delay(600)
+                    onQueryUpdated(newQuery)
+                }
+            },
+            shape = CircleShape,
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 8.dp),
+            placeholder = { Text("Search articles...") }
+        )
     }
 }
 
@@ -159,3 +217,8 @@ private fun PreviewArticleItem() {
     )
 }
 
+@Composable
+@Preview(showBackground = true)
+private fun SearchBarPreview() {
+    SearchBar(onQueryUpdated = {}, onBackPressed = {})
+}

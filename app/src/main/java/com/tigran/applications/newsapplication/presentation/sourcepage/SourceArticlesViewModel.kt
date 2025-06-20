@@ -80,10 +80,33 @@ class SourceArticlesViewModel @Inject constructor(
         }
     }
 
+    fun onSearchTextUpdated(text: String) {
+        viewModelScope.launch {
+            try {
+                val articleResponseModel = fetchArticles(
+                    sourceId = savedStateHandle.get<String>(SOURCE_ID_KEY)!!,
+                    query = text.takeIf { it.isNotEmpty() },
+                )
+                updateArticlesUiState(
+                    articleResponseModel.articles.map { it.toArticleUiState() }
+                )
+            } catch (e: Exception) {
+                _sourcePageUiState.value = SourcePageUiState(
+                    errorMessage = e.message ?: "Unknown error occurred"
+                )
+            }
+        }
+    }
+
     @Throws(ApiException::class)
-    private suspend fun fetchArticles(sourceId: String, page: Int): ArticleResponseModel {
+    private suspend fun fetchArticles(
+        sourceId: String,
+        query: String? = null,
+        page: Int? = null
+    ): ArticleResponseModel {
         return sourceArticlesRepository.getSourceArticles(
             sourceId = sourceId,
+            query = query,
             pageSize = PAGE_SIZE,
             page = page
         )

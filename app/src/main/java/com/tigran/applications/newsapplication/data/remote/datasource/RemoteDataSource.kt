@@ -27,13 +27,24 @@ class RemoteDataSource @Inject constructor(
     }
 
     @Throws(ApiException::class)
-    suspend fun getHeadlines(sourceId: String, page: Int, pageSize: Int): ArticleResponse {
-        val response = apiService.getHeadlines(
-            sourceId = sourceId,
-            page = page,
-            pageSize = pageSize,
-            apiKey = API_KEY
-        )
+    suspend fun getHeadlines(
+        sourceId: String,
+        query: String?,
+        page: Int?,
+        pageSize: Int
+    ): ArticleResponse {
+        val response =
+            try {
+                apiService.getHeadlines(
+                    sourceId = sourceId,
+                    query = query,
+                    page = page,
+                    pageSize = pageSize,
+                    apiKey = API_KEY
+                )
+            } catch (e: Exception) {
+                throw ApiException("Failed to fetch headlines")
+            }
         if (response.status == STATUS_CODE_OK) {
             return response
         }

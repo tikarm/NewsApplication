@@ -16,11 +16,13 @@ class SourceArticlesRepositoryImpl @Inject constructor(
     @Throws(ApiException::class)
     override suspend fun getSourceArticles(
         sourceId: String,
-        page: Int,
+        query: String?,
+        page: Int?,
         pageSize: Int
     ): ArticleResponseModel {
         return remoteDataSource.getHeadlines(
             sourceId = sourceId,
+            query = query,
             page = page,
             pageSize = pageSize
         ).toArticleResponseModel()

@@ -14,7 +14,7 @@ interface NewsApiService {
     @GET("v2/top-headlines")
     suspend fun getHeadlines(
         @Query("sources") sourceId: String,
-        @Query("page") page: Int,
+        @Query("page") page: Int?,
         @Query("pageSize") pageSize: Int,
         @Query("q") query: String? = null,
         @Query("apiKey") apiKey: String

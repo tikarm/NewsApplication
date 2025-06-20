@@ -5,7 +5,8 @@ import com.tigran.applications.newsapplication.domain.model.ArticleResponseModel
 interface SourceArticlesRepository {
     suspend fun getSourceArticles(
         sourceId: String,
-        page: Int,
+        query: String? = null,
+        page: Int?,
         pageSize: Int
     ): ArticleResponseModel
 }

@@ -54,7 +54,7 @@ fun NewsNavHost(navController: NavHostController) {
                 navArgument(SOURCE_ID_KEY) { type = NavType.StringType }
             )
         ) {
-            SourceArticlesScreen()
+            SourceArticlesScreen(onBackPressed = { navController.popBackStack() })
         }
     }
 }
