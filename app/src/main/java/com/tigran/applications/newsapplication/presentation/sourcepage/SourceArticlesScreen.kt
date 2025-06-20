@@ -1,9 +1,11 @@
 package com.tigran.applications.newsapplication.presentation.sourcepage
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.toUri
+import com.tigran.applications.newsapplication.presentation.common.ErrorMessage
 import com.tigran.applications.newsapplication.presentation.common.ImageCompose
 import com.tigran.applications.newsapplication.presentation.sourcepage.uistate.ArticleUiState
 import kotlinx.coroutines.delay
@@ -69,42 +72,58 @@ fun SourceArticlesScreen(
         }
     }
 
-    LazyColumn(
-        state = listState,
-    ) {
-        item {
-            SearchBar(
-                onQueryUpdated = { newQuery ->
-                    viewModel.onSearchTextUpdated(newQuery)
-                },
-                onBackPressed = {
-                    viewModel.onBackPressed()
-                    onBackPressed()
-                }
+    if (uiState.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(16.dp)
             )
         }
-        items(
-            count = uiState.articles.size,
-            key = { uiState.articles[it].id }
-        ) { index ->
-            val article = uiState.articles[index]
-
-            ArticleItem(
-                article = article,
-                isLastItem = index == uiState.articles.size - 1
-            ) {
-                onNewsArticleClicked(it)
-            }
-        }
-
-        if (isNewPageLoading) {
+    } else if (uiState.articles.isEmpty()) {
+        ErrorMessage("No articles found")
+    } else if (uiState.errorMessage != null) {
+        ErrorMessage(uiState.errorMessage!!)
+    } else {
+        LazyColumn(
+            state = listState,
+        ) {
             item {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .wrapContentWidth(Alignment.CenterHorizontally)
+                SearchBar(
+                    onQueryUpdated = { newQuery ->
+                        viewModel.onSearchTextUpdated(newQuery)
+                    },
+                    onBackPressed = {
+                        viewModel.onBackPressed()
+                        onBackPressed()
+                    }
                 )
+            }
+            items(
+                count = uiState.articles.size,
+                key = { uiState.articles[it].id }
+            ) { index ->
+                val article = uiState.articles[index]
+
+                ArticleItem(
+                    article = article,
+                    isLastItem = index == uiState.articles.size - 1
+                ) {
+                    onNewsArticleClicked(it)
+                }
+            }
+
+            if (isNewPageLoading) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                    )
+                }
             }
         }
     }
