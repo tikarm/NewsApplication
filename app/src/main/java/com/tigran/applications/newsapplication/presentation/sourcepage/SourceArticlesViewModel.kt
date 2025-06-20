@@ -13,7 +13,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.Random
 import javax.inject.Inject
 
 const val SOURCE_ID_KEY = "sourceIdKey"
@@ -98,6 +97,12 @@ class SourceArticlesViewModel @Inject constructor(
         }
     }
 
+    fun onBackPressed(){
+        viewModelScope.launch {
+            sourceArticlesRepository.clearLocalArticles()
+        }
+    }
+
     @Throws(ApiException::class)
     private suspend fun fetchArticles(
         sourceId: String,
@@ -120,7 +125,7 @@ class SourceArticlesViewModel @Inject constructor(
 
     private fun ArticleModel.toArticleUiState() =
         ArticleUiState(
-            id = Random().nextInt().toString(),
+            id = id,
             title = title ?: "",
             description = description ?: "",
             urlToImage = urlToImage ?: ""

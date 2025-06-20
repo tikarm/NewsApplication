@@ -11,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.tigran.applications.newsapplication.presentation.newsdetails.NEWS_ARTICLE_ID_KEY
+import com.tigran.applications.newsapplication.presentation.newsdetails.NewsDetailsScreen
 import com.tigran.applications.newsapplication.presentation.newssources.NewsSourcesScreen
 import com.tigran.applications.newsapplication.presentation.sourcepage.SOURCE_ID_KEY
 import com.tigran.applications.newsapplication.presentation.sourcepage.SourceArticlesScreen
@@ -54,7 +56,23 @@ fun NewsNavHost(navController: NavHostController) {
                 navArgument(SOURCE_ID_KEY) { type = NavType.StringType }
             )
         ) {
-            SourceArticlesScreen(onBackPressed = { navController.popBackStack() })
+            SourceArticlesScreen(
+                onNewsArticleClicked = { articleId ->
+                    navController.navigate(
+                        "$NEWS_ARTICLE_SCREEN/$articleId"
+                    )
+                },
+                onBackPressed = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = "$NEWS_ARTICLE_SCREEN/{$NEWS_ARTICLE_ID_KEY}",
+            arguments = listOf(
+                navArgument(NEWS_ARTICLE_ID_KEY) { type = NavType.StringType }
+            )
+        ) {
+            NewsDetailsScreen()
         }
     }
 }

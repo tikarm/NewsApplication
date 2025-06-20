@@ -1,6 +1,7 @@
 package com.tigran.applications.newsapplication.domain.model
 
 data class ArticleModel(
+    val id: String,
     val author: String?,
     val content: String?,
     val description: String?,

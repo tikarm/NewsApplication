@@ -1,5 +1,6 @@
 package com.tigran.applications.newsapplication.presentation.sourcepage
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,17 +30,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil3.compose.AsyncImage
-import coil3.request.CachePolicy
-import coil3.request.ImageRequest
 import coil3.toUri
+import com.tigran.applications.newsapplication.presentation.common.ImageCompose
 import com.tigran.applications.newsapplication.presentation.sourcepage.uistate.ArticleUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -47,6 +44,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SourceArticlesScreen(
     viewModel: SourceArticlesViewModel = hiltViewModel(),
+    onNewsArticleClicked: (String) -> Unit,
     onBackPressed: () -> Unit
 ) {
     val uiState by viewModel.sourcePageUiState.collectAsState()
@@ -79,7 +77,10 @@ fun SourceArticlesScreen(
                 onQueryUpdated = { newQuery ->
                     viewModel.onSearchTextUpdated(newQuery)
                 },
-                onBackPressed = onBackPressed
+                onBackPressed = {
+                    viewModel.onBackPressed()
+                    onBackPressed()
+                }
             )
         }
         items(
@@ -88,7 +89,12 @@ fun SourceArticlesScreen(
         ) { index ->
             val article = uiState.articles[index]
 
-            ArticleItem(article = article, isLastItem = index == uiState.articles.size - 1)
+            ArticleItem(
+                article = article,
+                isLastItem = index == uiState.articles.size - 1
+            ) {
+                onNewsArticleClicked(it)
+            }
         }
 
         if (isNewPageLoading) {
@@ -147,11 +153,16 @@ private fun SearchBar(
 @Composable
 private fun ArticleItem(
     article: ArticleUiState,
-    isLastItem: Boolean
+    isLastItem: Boolean,
+    onClick: (String) -> Unit
 ) {
-    Column {
+    Column(
+        modifier = Modifier.clickable {
+            onClick(article.id)
+        }
+    ) {
         Row {
-            ImageThumbnail(
+            ImageCompose(
                 modifier = Modifier
                     .size(100.dp)
                     .padding(8.dp),
@@ -183,26 +194,6 @@ private fun ArticleItem(
     }
 }
 
-@Composable
-private fun ImageThumbnail(
-    modifier: Modifier = Modifier,
-    uri: coil3.Uri,
-) {
-    val context = LocalContext.current
-    val imageRequest = ImageRequest.Builder(context)
-        .data(uri)
-        .memoryCacheKey(uri.path)
-        .memoryCachePolicy(CachePolicy.ENABLED)
-        .build()
-
-    AsyncImage(
-        model = imageRequest,
-        contentDescription = null,
-        contentScale = ContentScale.Fit,
-        modifier = modifier
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun PreviewArticleItem() {
@@ -213,7 +204,8 @@ private fun PreviewArticleItem() {
             description = "This is a sample description of an article.",
             urlToImage = "https://picsum.photos/id/237/200/300"
         ),
-        isLastItem = false
+        isLastItem = false,
+        onClick = {}
     )
 }
 

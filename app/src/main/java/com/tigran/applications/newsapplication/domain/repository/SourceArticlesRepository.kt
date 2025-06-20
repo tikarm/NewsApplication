@@ -9,4 +9,6 @@ interface SourceArticlesRepository {
         page: Int?,
         pageSize: Int
     ): ArticleResponseModel
+
+    suspend fun clearLocalArticles()
 }
