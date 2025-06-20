@@ -53,6 +53,13 @@ class NewsSourcesViewModel @Inject constructor(
         }
     }
 
+    fun onRetryClicked() {
+        _newsSourceListUiState.value = NewsSourceListUiState(isLoading = true)
+        viewModelScope.launch {
+            fetchNewsSources()
+        }
+    }
+
     fun onScreenClosed() {
         periodicFetchJob?.cancel()
     }

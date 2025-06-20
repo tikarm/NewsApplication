@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -63,7 +64,11 @@ fun NewsSourcesScreen(
             }
         }
     } else {
-        ErrorMessage(text = uiState.errorMessage ?: "Something went wrong")
+        ErrorMessage(text = uiState.errorMessage ?: "Something went wrong") {
+            TextButton(onClick = { viewModel.onRetryClicked() }) {
+                Text(text = "RETRY")
+            }
+        }
     }
 }
 
