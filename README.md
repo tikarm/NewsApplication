@@ -14,7 +14,7 @@ An Android app built in Kotlin that fetches and displays news from various sourc
 
 ### 2️⃣ News Source Screen
 - Lists articles from a selected news source via `/v2/top-headlines`
-- Pagination (5 articles per page, I set it to 5 because most articles are less than 10, so in case of pagination is visible) 
+- Pagination (5 articles per page, I set it to 5 because most articles are less than 10, so in this case pagination is visible) 
 - Search functionality to find article by text
 
 ### 3️⃣ News Detail Page
