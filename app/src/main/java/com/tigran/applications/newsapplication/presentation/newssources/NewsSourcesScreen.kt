@@ -22,6 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.tigran.applications.newsapplication.presentation.common.ErrorMessage
 import com.tigran.applications.newsapplication.presentation.newssources.uistate.NewsSourceUiState
 
@@ -32,9 +35,27 @@ fun NewsSourcesScreen(
 ) {
     val uiState by viewModel.newsSourceListUiState.collectAsState()
 
-    DisposableEffect(Unit) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    viewModel.onScreenVisible()
+                }
+
+                Lifecycle.Event.ON_PAUSE -> {
+                    viewModel.onScreenClosed()
+                }
+
+                else -> Unit
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
         onDispose {
-            viewModel.onScreenClosed()
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 

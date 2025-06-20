@@ -24,8 +24,6 @@ class NewsSourcesViewModel @Inject constructor(
         MutableStateFlow(NewsSourceListUiState(isLoading = true)).also {
             viewModelScope.launch {
                 fetchNewsSources()
-            }.invokeOnCompletion {
-                fetchEvery(60_000)
             }
         }
     }
@@ -58,6 +56,10 @@ class NewsSourcesViewModel @Inject constructor(
         viewModelScope.launch {
             fetchNewsSources()
         }
+    }
+
+    fun onScreenVisible() {
+        fetchEvery(4000)
     }
 
     fun onScreenClosed() {
