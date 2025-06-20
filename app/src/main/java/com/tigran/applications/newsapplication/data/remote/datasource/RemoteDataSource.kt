@@ -2,7 +2,7 @@ package com.tigran.applications.newsapplication.data.remote.datasource
 
 import com.tigran.applications.newsapplication.data.remote.api.NewsApiService
 import com.tigran.applications.newsapplication.data.remote.exception.ApiException
-import com.tigran.applications.newsapplication.data.remote.model.Article
+import com.tigran.applications.newsapplication.data.remote.model.ArticleResponse
 import com.tigran.applications.newsapplication.data.remote.model.NewsSource
 import javax.inject.Inject
 
@@ -27,7 +27,7 @@ class RemoteDataSource @Inject constructor(
     }
 
     @Throws(ApiException::class)
-    suspend fun getHeadlines(sourceId: String, page: Int = 1, pageSize: Int = 30): List<Article> {
+    suspend fun getHeadlines(sourceId: String, page: Int, pageSize: Int): ArticleResponse {
         val response = apiService.getHeadlines(
             sourceId = sourceId,
             page = page,
@@ -35,7 +35,7 @@ class RemoteDataSource @Inject constructor(
             apiKey = API_KEY
         )
         if (response.status == STATUS_CODE_OK) {
-            return response.articles
+            return response
         }
         throw ApiException("Failed to fetch headlines")
     }

@@ -25,7 +25,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.tigran.applications.newsapplication.presentation.newssources.uistate.NewsSourceUiState
 
 @Composable
-fun NewsSourcesScreen(viewModel: NewsSourcesViewModel = hiltViewModel()) {
+fun NewsSourcesScreen(
+    viewModel: NewsSourcesViewModel = hiltViewModel(),
+    onSourceClicked: (String) -> Unit = {}
+) {
     val uiState by viewModel.newsSourceListUiState.collectAsState()
 
     DisposableEffect(Unit) {
@@ -52,7 +55,11 @@ fun NewsSourcesScreen(viewModel: NewsSourcesViewModel = hiltViewModel()) {
             ) { index ->
                 val source = uiState.sources[index]
 
-                NewsSourceItem(source = source, isLast = index == uiState.sources.size - 1)
+                NewsSourceItem(
+                    source = source,
+                    isLast = index == uiState.sources.size - 1,
+                    onSourceClicked = onSourceClicked
+                )
             }
         }
     } else {
@@ -71,9 +78,16 @@ fun NewsSourcesScreen(viewModel: NewsSourcesViewModel = hiltViewModel()) {
 @Composable
 private fun NewsSourceItem(
     source: NewsSourceUiState,
-    isLast: Boolean
+    isLast: Boolean,
+    onSourceClicked: (String) -> Unit
 ) {
-    Column(modifier = Modifier.padding(8.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .clickable {
+                onSourceClicked(source.id)
+            }
+    ) {
         Text(
             text = source.name,
             fontWeight = FontWeight.Bold
@@ -105,7 +119,7 @@ fun PreviewNewsSourceItem() {
         description = "This is a sample description for a news source."
     )
 
-    NewsSourceItem(source = sampleSource, isLast = false)
+    NewsSourceItem(source = sampleSource, isLast = false, {})
 }
 
 
