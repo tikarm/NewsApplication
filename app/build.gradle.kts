@@ -60,6 +60,9 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.coil)
     implementation(libs.coil.network.okhttp)
+    ksp(libs.room.compiler)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
